@@ -27,6 +27,17 @@ fn main() {
     } else if arg == "--store" {
       let file_path = args[i + 1].as_str();
       store_entry(Path::new(file_path));
+    } else if arg == "--add-tags" {
+      let file_path = args[i + 1].as_str();
+      let tags: Vec<String> = args[i + 2]
+                                .as_str()
+                                .split(",")
+                                .map(|x| String::from(x))
+                                .collect::<Vec<String>>();
+
+      add_tags(Path::new(file_path), &tags)
+    } else if arg == "--template" {
+      template()
     }
   }
 
@@ -83,20 +94,37 @@ fn store_entry(path: &Path) {
   let file_contents = fs::read_to_string(path).unwrap();
   
   let now = Utc::now();
-  let file_name = format!("data/{}-{}-{}.txt", now.year(), now.month(), now.day());
+  let file_name = format!("data/{}-{}-{}.md", now.year(), now.month(), now.day());
   let file_path = Path::new(&file_name);
 
   if !file_path.exists() {
     fs::write(&file_path, &file_contents).unwrap();
-    println!("Successfully wrote entry to {}", file_name);
+    println!("Successfully wrote entry to {}", &file_path.to_str().unwrap());
   } else {
-    println!("A file already exists at {}", file_name);
+    println!("A file already exists at {}", &file_path.to_str().unwrap());
   }
 }
 
+fn add_tags(path: &Path, tags: &Vec<String>) {
+  let existing_tags = fs::read_to_string("meta/tags.txt").unwrap();
+  let new_tags = String::from(path.to_str().unwrap()) + "," + &tags.join("-");
+  let file_contents = existing_tags + "\n" + &new_tags;
 
+  fs::write("meta/tags.txt", &file_contents).unwrap();
+  print!("Added tags: ");
 
+  for (i, tag) in tags.iter().enumerate() {
+    if i != tags.len() - 1 {
+      print!("{}, ", tag);
+    } else {
+      println!("{}", tag);
+    }
+  }
+}
 
+fn template() {
+  fs::copy("res/template.md", "template.txt").unwrap();
+}
 
 
 
