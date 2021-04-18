@@ -1,6 +1,8 @@
 # Rust-Journal
 A simple journaling system, written in Rust.
 
+**You must create a `meta` folder and a `data` folder in the root directory for Rust-Journal to work!**
+
 ## Documentation
 
 ```
