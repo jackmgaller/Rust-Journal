@@ -1,6 +1,12 @@
 use std::fs;
 use std::collections::HashMap;
 use std::env;
+use std::path::Path;
+use chrono::{Datelike, Utc};
+
+mod print_journal;
+
+pub use crate::print_journal::*;
 
 fn main() {
 
@@ -16,7 +22,11 @@ fn main() {
     if arg == "--print-all" {
       print_all(&file_names, &tags);
     } else if arg == "--print" {
-      print_one(&args[i + 1].as_str(), &file_names, &tags);
+      let file_search = args[i + 1].as_str();
+      print_one(&file_search, &file_names, &tags);
+    } else if arg == "--store" {
+      let file_path = args[i + 1].as_str();
+      store_entry(Path::new(file_path));
     }
   }
 
@@ -42,8 +52,6 @@ fn print_all(file_names: &Vec<String>, tags: &HashMap<String, Vec<String>>) {
     print_file_tags(&file_name, &tags);
   }
 }
-  
-
 
 fn get_file_names() -> Vec<String> {
   let files = fs::read_dir("data")
@@ -71,32 +79,33 @@ fn import_tags(tags: &mut HashMap<String, Vec<String>>) {
   }
 }
 
-fn print_file_metadata(path: &String) {
-  let metadata = fs::metadata(path).unwrap();
+fn store_entry(path: &Path) {
+  let file_contents = fs::read_to_string(path).unwrap();
+  
+  let now = Utc::now();
+  let file_name = format!("data/{}-{}-{}.txt", now.year(), now.month(), now.day());
+  let file_path = Path::new(&file_name);
 
-  println!("{} bytes", metadata.len());
-  println!("===========");
-}
-
-fn print_file_data(path: &String) {
-  let data = fs::read_to_string(path).unwrap();
-  println!("{}", data);  
-}
-
-fn print_file_tags(file_name: &String, tags: &HashMap<String, Vec<String>>) {
-  if tags.contains_key(file_name) {
-    print!("Tags: ");
-    let file_tags: Vec<String> = tags.get(file_name).unwrap().to_vec();
-
-    for (i, file_tag) in file_tags.iter().enumerate() {
-      if i != file_tags.len() - 1 {
-        print!("{}, ", file_tag);
-      } else {
-        println!("{}", file_tag);
-      }
-    }
-    println!("");
+  if !file_path.exists() {
+    fs::write(&file_path, &file_contents).unwrap();
+    println!("Successfully wrote entry to {}", file_name);
   } else {
-    println!("No tags for {}", file_name);
+    println!("A file already exists at {}", file_name);
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
