@@ -1,0 +1,3 @@
+data/gatsby.txt,fiction-old
+data/plato.txt,nonfiction-ancient
+data/sherlock.txt,fiction-old

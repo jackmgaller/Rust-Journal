@@ -1,0 +1,11 @@
+[package]
+name = "rust_journal"
+version = "0.0.1"
+authors = ["Jack Galler <jackmgaller@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+
+[[bin]]
+name = "rust_journal"
+path = "src/rust_journal.rs"
