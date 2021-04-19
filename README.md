@@ -15,4 +15,4 @@ A simple journaling system, written in Rust.
 --print FILEPATH : Prints a specified entry.
 ```
 
-[1] .gitignore files don't allow empty folders, keeping them would mean pushing any changes to a fork of this project would also require pushing all of your sensitive journal entries
+[1] `.gitignore` files don't allow empty folders, keeping them would mean pushing any changes to a fork of this project would also require pushing all of your sensitive journal entries

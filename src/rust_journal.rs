@@ -38,6 +38,9 @@ fn main() {
       add_tags(Path::new(file_path), &tags)
     } else if arg == "--template" {
       template()
+    } else if arg == "--tag-frequencies" {
+      let values = &tags.values().collect();
+      tag_frequencies(values);
     }
   }
 
@@ -126,7 +129,26 @@ fn template() {
   fs::copy("res/template.md", "template.txt").unwrap();
 }
 
+fn tag_frequencies(values: &Vec<&Vec<String>>) {
+  let mut frequencies: HashMap<String, u64> = HashMap::new();
 
+  for &tags in values {
+    for tag in tags {
+      if !frequencies.contains_key(tag) {
+        frequencies.insert(tag.to_string(), 1);
+      } else {
+        frequencies.insert(tag.to_string(), frequencies.get(tag).unwrap() + 1);
+      }
+    }
+  }
+
+  let mut frequencies: Vec<(&String, &u64)> = frequencies.iter().collect();
+  frequencies.sort_by(|(_key1, val1), (_key2, val2)| val2.cmp(val1));
+
+  for (key, value) in frequencies {
+    println!("{}: {}", key, value);
+  }
+}
 
 
 
